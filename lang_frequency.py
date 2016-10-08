@@ -1,33 +1,29 @@
 import sys
+import collections
 
 def load_data(filepath):
-    f = open(filepath)
-    text = f.read()
-    f.close()
-    return text
-
+    with open(filepath, 'r') as file_handler:
+        return file_handler.read()
 
 def get_most_frequent_words(text):
     punctuation_marks = [
-        '.', ',', ';', '!', '?',
-        ':', '-', '"', '/', '(',
-        ')', '[', ']', '{', '}' 
+        '.', ',', ';', ':', '!',
+        '?', '"', '-', '(', ')',
+        '{', '}', '[', ']'
     ]
     
-    for s in punctuation_marks:
-        text = text.replace(s, '')
-    
     text = text.lower()
+     
+    char_list= []
+    for char in text:
+        if char not in punctuation_marks:
+            char_list.append(char)
     
-    words_list = text.split()
+    words_list = ''.join(char_list).split()
 
-    most_frequent_words = sorted(
-        { word : words_list.count(word) for word in words_list }.items(),
-        key = lambda x: x[1],
-        reverse = True
-    )
-    
-    return most_frequent_words[:10]
+    words_count = 10
+
+    return collections.Counter(words_list).most_common(words_count)
     
     
 
@@ -44,7 +40,5 @@ if __name__ == '__main__':
     text = load_data(filepath)
     most_frequent_words = get_most_frequent_words(text)
     print('10 words with the most frequency (word / frequency):')
-    num = 0
-    for (word, frequency) in most_frequent_words:
-        num += 1
-        print(num, ' ', word, ' / ', frequency)
+    for (num, (word, frequency)) in enumerate(most_frequent_words):
+        print(num + 1, ' ', word, ' / ', frequency)
